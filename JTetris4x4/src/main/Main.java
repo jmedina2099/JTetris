@@ -3,10 +3,6 @@
  */
 package main;
 
-import java.awt.Point;
-import java.util.ArrayList;
-
-import figure.Ele;
 import ui.FramePrincipal;
 import ui.PanelTetris;
 
