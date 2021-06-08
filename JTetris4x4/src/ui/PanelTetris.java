@@ -5,8 +5,11 @@ package ui;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -36,6 +39,8 @@ public class PanelTetris extends JPanel implements Runnable {
 	private boolean stopped = true;
 
 	private Figure figura;
+
+	private BufferedImage dobleBufferedImage;
 
 	public PanelTetris() {
 		super( true );
@@ -176,36 +181,78 @@ public class PanelTetris extends JPanel implements Runnable {
 	
 	@Override
 	protected void paintComponent(Graphics g) {
-		super.paintComponent(g);
 		
-		//System.out.println( "paintComponent" );
+		System.out.println( "paintComponent" );
 		
-		Rectangle rec = g.getClipBounds();
+		Graphics2D g2 = (Graphics2D)g;
+		Rectangle rec = g2.getClipBounds();
+		
 		int step = (int)Math.round((rec.height-2*BORDER)/20.0);
 		int x0 = BORDER;
 		int y0 = BORDER;
 		
+		if( dobleBufferedImage == null ) {
+			
+			repaintBufferedImage(rec);
+			
+		} else {
+			repaintImage(g2);
+
+			if( this.figura != null ) {
+				ArrayList<Point> boxes = this.figura.getFigura();
+				for( Point p : boxes ) {
+					g2.setColor( Color.red );
+					g2.fillRect( step*(p.x+1)-x0, step*(p.y+1)-y0, step, step);
+					
+					g2.setColor( Color.black );
+					g2.drawRect( step*(p.x+1)-x0, step*(p.y+1)-y0, step, step);
+				}
+			}
+		}
+
+	}
+	
+	private void repaintImage( Graphics2D g2 ) {
+		
+		System.out.println( "*** repaintImage g2="+g2 );
+		
+		g2.drawImage( this.dobleBufferedImage, new AffineTransform(), this );
+	}
+	
+	private void repaintBufferedImage( Rectangle rec ) {
+		
+		System.out.println( "*** repaintBufferedImage rec="+rec );
+		
+		int step = (int)Math.round((rec.height-2*BORDER)/20.0);
+		int x0 = BORDER;
+		int y0 = BORDER;
+
+		this.dobleBufferedImage = new BufferedImage(rec.width, rec.height, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g2 = this.dobleBufferedImage.createGraphics();
+		super.paintComponent(g2);
+		
 		for( int j=0; j<malla[0].length; j++ ) {
 			for( int i=0; i<malla.length; i++ ) {
-				if( this.malla[i][j] == 1 ) {
+				if( this.malla[i][j] == 1 && !this.mallaPuntos[i][j].equals( this.figura ) ) {
 					//System.out.print( "("+i+","+j+")="+malla[i][j]+" " );
 					
-					g.setColor( Color.red );
-					g.fillRect( step*(i+1)-x0, step*(j+1)-y0, step, step);
+					g2.setColor( Color.red );
+					g2.fillRect( step*(i+1)-x0, step*(j+1)-y0, step, step);
 					
-					g.setColor( Color.black );
-					g.drawRect( step*(i+1)-x0, step*(j+1)-y0, step, step);
+					g2.setColor( Color.black );
+					g2.drawRect( step*(i+1)-x0, step*(j+1)-y0, step, step);
 				}
 			}
 			//System.out.println( "" );
 		}
+		
 	}
 
 	@Override
 	public void run() {
 		
 		System.out.println( "START" );
-
+		
 		while( !stopped ) {
 
 			if( this.figura != null && canDown() ) {
@@ -214,7 +261,7 @@ public class PanelTetris extends JPanel implements Runnable {
 				Ele fig = new Ele();
 				if( canEnter( fig ) ) {
 					//System.out.println( "1" );
-					this.figura = fig;
+					fix(fig);
 					enterFigure( fig );
 				} else {
 					//System.out.println( "2" );
@@ -238,6 +285,9 @@ public class PanelTetris extends JPanel implements Runnable {
 
 	private void fix( Figure fig ) {
 		
+		this.dobleBufferedImage = null;
+		this.figura = fig;
+		repaint(0);
 	}
 
 	public void starting() {
