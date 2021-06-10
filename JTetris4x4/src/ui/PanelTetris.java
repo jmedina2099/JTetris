@@ -38,7 +38,7 @@ public class PanelTetris extends JPanel implements Runnable {
 
 	private boolean stopped = true;
 
-	private Figure figura;
+	private Figure figura = null;
 
 	private BufferedImage dobleBufferedImage;
 	
@@ -72,6 +72,8 @@ public class PanelTetris extends JPanel implements Runnable {
 			} catch ( ArrayIndexOutOfBoundsException e) {
 			}
 		}
+		repaint(0);
+
 		return true;
 	}
 	
@@ -156,6 +158,9 @@ public class PanelTetris extends JPanel implements Runnable {
 		
 		ArrayList<Point> listaPuntos = this.figura.getFigura();
 		for( Point p : listaPuntos ) {
+			if( p.y < 0 ) {
+				continue;
+			}
 			if( DEBUG )
 				System.out.println( "p.x,p.y="+p.x+","+p.y );
 			try {
@@ -169,6 +174,10 @@ public class PanelTetris extends JPanel implements Runnable {
 		int yy;
 		for( Point p : listaPuntos ) {
 			yy = (p.y+1);
+			if( yy < 0 ) {
+				p.y++;
+				continue;
+			}
 			if( DEBUG )
 				System.out.println( "yy="+yy );
 			try {
@@ -180,6 +189,8 @@ public class PanelTetris extends JPanel implements Runnable {
 			p.y = yy;
 			//System.out.println( p.x+","+p.y+" / "+yy);
 		}
+		
+		repaint(0);
 	}
 	
 	@Override
@@ -264,9 +275,11 @@ public class PanelTetris extends JPanel implements Runnable {
 		if( DEBUG )
 			System.out.println( "START" );
 		
-		Figure fig = null;
+		
+		long time = 1000;
+		Figure fig;
 		while( !stopped ) {
-
+			
 			if( this.figura != null && canDown() ) {
 				down();
 			} else { 			
@@ -281,29 +294,31 @@ public class PanelTetris extends JPanel implements Runnable {
 					stopped = true;
 				}
 			}
-
-			repaint(0);
 			
-			try {
-				Thread.sleep( 1000 );
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			sleepThread();
 		}			
 		
-		if( DEBUG )
-			System.out.println( "END" );
+		System.out.println( "END" );
 		
+	}
+	
+	private void sleepThread() {
+		try {
+			Thread.sleep( 1000 );
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void fix( Figure fig ) {
 		
 		this.dobleBufferedImage = null;
 		this.figura = fig;
-		repaint(0);
 	}
 
 	public void starting() {
+		
+		System.out.println( "starting" );
 
 		// Start
 		if( stopped ) {
@@ -318,7 +333,6 @@ public class PanelTetris extends JPanel implements Runnable {
 		
 		if( this.figura != null && canDown() ) {
 			down();
-			repaint(0);
 		}
 	}
 	
