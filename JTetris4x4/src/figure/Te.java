@@ -10,9 +10,12 @@ import java.awt.Point;
  *
  */
 public class Te extends Figure {
+	
+	private boolean DEBUG = false;
 
 	public Te() {
-		System.out.println( "Te" );
+		if( DEBUG )
+			System.out.println( "Te" );
 		init();
 	}
 

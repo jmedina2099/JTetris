@@ -11,8 +11,11 @@ import java.awt.Point;
  */
 public class Ele extends Figure {
 	
+	private boolean DEBUG = false;
 	
 	public Ele() {
+		if( DEBUG )
+			System.out.println( "Ele" );
 		init();
 	}
 

@@ -47,7 +47,8 @@ public class PanelTetris extends JPanel implements Runnable {
 	public PanelTetris() {
 		super( true );
 		init();
-		System.out.println( "PanelTetris" );
+		if( DEBUG )
+			System.out.println( "PanelTetris" );
 	}
 
 	private void init() {
@@ -82,17 +83,6 @@ public class PanelTetris extends JPanel implements Runnable {
 		
 		boolean canEnter = true;
 
-		boolean parcDentro = false;
-		for( Point p : fig.getFigura() ) {
-			if( p.y >= 0 ) {
-				parcDentro = true;
-			}
-		}
-		if( !parcDentro ) {
-			//System.out.println( "!parcDentro="+!parcDentro );
-			return false;
-		}
-		
 		for( Point p : fig.getFigura() ) {
 			try {
 				if( DEBUG )
@@ -107,7 +97,7 @@ public class PanelTetris extends JPanel implements Runnable {
 		
 		if( DEBUG )
 			System.out.println( "canEnter="+canEnter );
-	
+		
 		return canEnter;
 	}
 
@@ -117,6 +107,16 @@ public class PanelTetris extends JPanel implements Runnable {
 
 		if( this.figura == null ) {
 			return canDown;
+		}
+		
+		boolean parcDentro = false;
+		for( Point p : this.figura.getFigura() ) {
+			if( p.y >= 0 ) {
+				parcDentro = true;
+			}
+		}
+		if( !parcDentro ) {
+			return false;
 		}
 		
 		for( Point p : this.figura.getFigura() ) {
@@ -143,15 +143,6 @@ public class PanelTetris extends JPanel implements Runnable {
 				return false;
 			}
  		}
-		boolean parcDentro = false;
-		for( Point p : this.figura.getFigura() ) {
-			if( p.y >= 0 ) {
-				parcDentro = true;
-			}
-		}
-		if( !parcDentro ) {
-			return false;
-		}
 		if( DEBUG )
 			System.out.println( "*** "+canDown );
 
@@ -160,24 +151,31 @@ public class PanelTetris extends JPanel implements Runnable {
 	
 	public void down() {
 		
-		//System.out.println( "down()" );
+		if( DEBUG )
+			System.out.println( "down()" );
 		
 		ArrayList<Point> listaPuntos = this.figura.getFigura();
 		for( Point p : listaPuntos ) {
+			if( DEBUG )
+				System.out.println( "p.x,p.y="+p.x+","+p.y );
 			try {
 				this.malla[p.x][p.y] = 0;
 				this.mallaPuntos[p.x][p.y] = null;
 			} catch( ArrayIndexOutOfBoundsException e ) {
+				System.out.println( "ArrayIndexOutOfBoundsException1" );
 			}
  		}
 
 		int yy;
 		for( Point p : listaPuntos ) {
 			yy = (p.y+1);
+			if( DEBUG )
+				System.out.println( "yy="+yy );
 			try {
 				this.malla[p.x][yy] = 1;
 				this.mallaPuntos[p.x][yy] = this.figura;
 			} catch( ArrayIndexOutOfBoundsException e ) {
+				System.out.println( "ArrayIndexOutOfBoundsException2" );
 			}
 			p.y = yy;
 			//System.out.println( p.x+","+p.y+" / "+yy);
@@ -186,6 +184,7 @@ public class PanelTetris extends JPanel implements Runnable {
 	
 	@Override
 	protected void paintComponent(Graphics g) {
+		
 		
 		if( DEBUG )
 			System.out.println( "paintComponent" );
@@ -198,7 +197,6 @@ public class PanelTetris extends JPanel implements Runnable {
 		int y0 = BORDER;
 		
 		if( dobleBufferedImage == null ) {
-			
 			repaintBufferedImage(rec);
 			
 		} else {
@@ -260,6 +258,8 @@ public class PanelTetris extends JPanel implements Runnable {
 
 	@Override
 	public void run() {
+		
+		super.paintComponent(this.getGraphics());
 		
 		if( DEBUG )
 			System.out.println( "START" );
