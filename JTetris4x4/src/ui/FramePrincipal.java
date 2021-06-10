@@ -4,6 +4,8 @@
 package ui;
 
 import java.awt.Container;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -13,7 +15,7 @@ import javax.swing.JFrame;
  * @author jmedina
  *
  */
-public class FramePrincipal extends JFrame {
+public class FramePrincipal extends JFrame implements KeyListener {
 
 	/**
 	 * 
@@ -25,6 +27,7 @@ public class FramePrincipal extends JFrame {
 	public FramePrincipal() {
 		super("JTetris 4x4");
 		init();
+		addKeyListener( this );
 	}
 
 	private void init() {
@@ -46,5 +49,27 @@ public class FramePrincipal extends JFrame {
 	public PanelTetris setPanelTetris(PanelTetris panelTetris) {
 		this.panelTetris = panelTetris;
 		return panelTetris;
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		
+		//System.out.println( "keyTyped "+e.getKeyCode() );
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		
+		if( e.getKeyCode() == 40 ) {
+			getPanelTetris().downFigure();
+		}
+
+		//System.out.println( "keyPressed"+e.getKeyCode() );
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		
+		//System.out.println( "keyReleased"+e.getKeyCode() );
 	}
 }

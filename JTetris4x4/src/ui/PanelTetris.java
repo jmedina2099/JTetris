@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
-import figure.Ele;
 import figure.Figure;
+import figure.FigureFactory;
 
 /**
  * @author jmedina
@@ -41,6 +41,8 @@ public class PanelTetris extends JPanel implements Runnable {
 	private Figure figura;
 
 	private BufferedImage dobleBufferedImage;
+	
+	private boolean DEBUG = false;
 
 	public PanelTetris() {
 		super( true );
@@ -62,7 +64,8 @@ public class PanelTetris extends JPanel implements Runnable {
 		// Enter Game
 		for( Point p : this.figura.getFigura() ) {
 			try {
-				System.out.println( "entering "+p.x+","+p.y );
+				if( DEBUG )
+					System.out.println( "entering "+p.x+","+p.y );
 				this.malla[p.x][p.y] = 1;
 				this.mallaPuntos[p.x][p.y] = this.figura;
 			} catch ( ArrayIndexOutOfBoundsException e) {
@@ -92,7 +95,8 @@ public class PanelTetris extends JPanel implements Runnable {
 		
 		for( Point p : fig.getFigura() ) {
 			try {
-				System.out.println( "canEnter "+p.x+","+p.y );
+				if( DEBUG )
+					System.out.println( "canEnter "+p.x+","+p.y );
 				if( this.malla[p.x][p.y] == 1 && 
 				    !fig.equals( this.mallaPuntos[p.x][p.y] ) ) {
 					canEnter = false;
@@ -101,7 +105,8 @@ public class PanelTetris extends JPanel implements Runnable {
 			}
 		}
 		
-		System.out.println( "canEnter="+canEnter );
+		if( DEBUG )
+			System.out.println( "canEnter="+canEnter );
 	
 		return canEnter;
 	}
@@ -130,7 +135,8 @@ public class PanelTetris extends JPanel implements Runnable {
 				continue;
 			}
 			int yy = p.y+1;
-			System.out.println( "x,y="+p.x+","+p.y+" / yy="+yy );
+			if( DEBUG )
+				System.out.println( "x,y="+p.x+","+p.y+" / yy="+yy );
 			if( yy < this.malla[p.x].length ) {
 				try {
 					if( this.malla[p.x][yy] == 1 && 
@@ -148,7 +154,8 @@ public class PanelTetris extends JPanel implements Runnable {
 				return false;
 			}
  		}
-		System.out.println( "*** "+canDown );
+		if( DEBUG )
+			System.out.println( "*** "+canDown );
 
 		return canDown;
 	}
@@ -182,7 +189,8 @@ public class PanelTetris extends JPanel implements Runnable {
 	@Override
 	protected void paintComponent(Graphics g) {
 		
-		System.out.println( "paintComponent" );
+		if( DEBUG )
+			System.out.println( "paintComponent" );
 		
 		Graphics2D g2 = (Graphics2D)g;
 		Rectangle rec = g2.getClipBounds();
@@ -214,14 +222,16 @@ public class PanelTetris extends JPanel implements Runnable {
 	
 	private void repaintImage( Graphics2D g2 ) {
 		
-		System.out.println( "*** repaintImage g2="+g2 );
+		if( DEBUG )
+			System.out.println( "*** repaintImage g2="+g2 );
 		
 		g2.drawImage( this.dobleBufferedImage, new AffineTransform(), this );
 	}
 	
 	private void repaintBufferedImage( Rectangle rec ) {
 		
-		System.out.println( "*** repaintBufferedImage rec="+rec );
+		if( DEBUG )
+			System.out.println( "*** repaintBufferedImage rec="+rec );
 		
 		int step = (int)Math.round((rec.height-2*BORDER)/20.0);
 		int x0 = BORDER;
@@ -251,14 +261,16 @@ public class PanelTetris extends JPanel implements Runnable {
 	@Override
 	public void run() {
 		
-		System.out.println( "START" );
+		if( DEBUG )
+			System.out.println( "START" );
 		
+		Figure fig = null;
 		while( !stopped ) {
 
 			if( this.figura != null && canDown() ) {
 				down();
 			} else { 			
-				Ele fig = new Ele();
+				fig = FigureFactory.getFigure();
 				if( canEnter( fig ) ) {
 					//System.out.println( "1" );
 					fix(fig);
@@ -279,7 +291,8 @@ public class PanelTetris extends JPanel implements Runnable {
 			}
 		}			
 		
-		System.out.println( "END" );
+		if( DEBUG )
+			System.out.println( "END" );
 		
 	}
 
@@ -299,6 +312,14 @@ public class PanelTetris extends JPanel implements Runnable {
 			thread.start();
 		}
 		
+	}
+
+	public void downFigure() {
+		
+		if( this.figura != null && canDown() ) {
+			down();
+			repaint(0);
+		}
 	}
 	
 }

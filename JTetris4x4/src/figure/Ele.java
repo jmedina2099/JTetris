@@ -4,15 +4,13 @@
 package figure;
 
 import java.awt.Point;
-import java.util.ArrayList;
 
 /**
  * @author jmedina
  *
  */
-public class Ele implements Figure {
+public class Ele extends Figure {
 	
-	ArrayList<Point> figura = new ArrayList<Point>();
 	
 	public Ele() {
 		init();
@@ -31,16 +29,6 @@ public class Ele implements Figure {
 		for( Point p : puntos ) {
 			figura.add(p);
 		}
-	}
-
-	@Override
-	public ArrayList<Point> getFigura() {
-		return figura;
-	}
-
-	@Override
-	public void setFigura(ArrayList<Point> figura) {
-		this.figura = figura;
 	}
 
 }
