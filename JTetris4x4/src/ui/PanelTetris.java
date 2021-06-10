@@ -119,17 +119,6 @@ public class PanelTetris extends JPanel implements Runnable {
 			return canDown;
 		}
 		
-		boolean parcDentro = false;
-		for( Point p : this.figura.getFigura() ) {
-			if( p.y >= 0 ) {
-				parcDentro = true;
-			}
-		}
-		if( !parcDentro ) {
-			return false;
-		}
-			
-		
 		for( Point p : this.figura.getFigura() ) {
 			if( p.y < 0 ) {
 				continue;
@@ -154,6 +143,15 @@ public class PanelTetris extends JPanel implements Runnable {
 				return false;
 			}
  		}
+		boolean parcDentro = false;
+		for( Point p : this.figura.getFigura() ) {
+			if( p.y >= 0 ) {
+				parcDentro = true;
+			}
+		}
+		if( !parcDentro ) {
+			return false;
+		}
 		if( DEBUG )
 			System.out.println( "*** "+canDown );
 
@@ -221,6 +219,8 @@ public class PanelTetris extends JPanel implements Runnable {
 	}
 	
 	private void repaintImage( Graphics2D g2 ) {
+		
+		super.paintComponent(g2);
 		
 		if( DEBUG )
 			System.out.println( "*** repaintImage g2="+g2 );
